@@ -1,35 +1,95 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Address from "./components/address";
+import { ErrorMessageCustom } from "./components/msg-error";
+import Role from "./components/role";
+import useApp from "./hooks";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const {
+    addressFields,
+    addressAppend,
+    addressRemove,
+    rolesFields,
+    rolesAppend,
+    rolesRemove,
+    isValid,
+    register,
+    errors,
+    handleSubmit,
+    onSubmit
+  } = useApp();
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        autoComplete="off"
+      >
+        <h1>Register</h1>
+        <input
+          {...register("name")}
+          className={errors["name"] ? "input-error" : ""}
+          type="string"
+          placeholder="Name"
+        />
+        {ErrorMessageCustom(errors, "name")}
+        <input
+          {...register("age")}
+          className={errors["age"] ? "input-error" : ""}
+          type="number"
+          placeholder="Age"
+        />
+        {ErrorMessageCustom(errors, "age")}
+        <div>
+          <div className="addresses">
+            <h2>Addresses</h2>
+            <button
+              className="btn-append"
+              type="button"
+              onClick={() => addressAppend({ address: "", zip: "" })}
+            >
+              +
+            </button>
+          </div>
+          {addressFields.map((field, index) => (
+            <Address
+              key={field.id}
+              register={register}
+              index={index}
+              remove={addressRemove}
+              errors={errors}
+            />
+          ))}
+        </div>
+        <div>
+          <div className="roles">
+            <h2>Roles</h2>
+            <button
+              className="btn-append"
+              type="button"
+              onClick={() => rolesAppend({ role: "" })}
+            >
+              +
+            </button>
+          </div>
+          {rolesFields.map((field, index) => (
+            <Role
+              key={field.id}
+              register={register}
+              index={index}
+              remove={rolesRemove}
+              errors={errors}
+            />
+          ))}
+        </div>
+        <button
+          type="submit"
+          disabled={!isValid}
+        >
+          Register
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      </form>
+    </div>
+  );
 }
 
-export default App
+export default App;
